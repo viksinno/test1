@@ -1,0 +1,53 @@
+.done {
+    text-decoration: line-through;
+}
+.heading{
+    text-align: center;
+    font-weight: 600;
+}
+.form{
+    text-align: center;
+    display: inline;
+}
+ul li {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+.container{
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: aqua;
+    font-size: 1.5rem;
+}
+.content{
+    background-color: aliceblue;
+    margin-top: 10rem;
+    padding: 2rem 4rem;
+    box-shadow: 2px 2px 4px black;
+}
+.btn{
+    all:unset;
+    border: 1px solid black;
+    width: 150px;
+    height: 50px;
+    border-radius: 30px;
+    text-align: center;
+    margin-left: 20px;
+}
+.btn:hover{
+    cursor: pointer;
+    background-color: red;
+    border: 1px solid red;
+    color:aliceblue;
+}
+.input{
+    height: 25px;
+    border-radius: 30px;
+    width: 162px;
+    font-size: 1.4rem;
+    padding: 0.7rem;
+}
+li {
+    padding: 1rem;
+}
