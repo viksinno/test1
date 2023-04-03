@@ -1,73 +1,84 @@
-<!DOCTYPE html>
-<html>
+<?php
 
-<head>
-    <title>Todo App</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+// Include the model
+require_once 'models/TodoList.php';
+require_once './controller/TodoController.php';
 
-<body>
-    <div class="container">
-        <div class="content">
-            <?php
-            // Start session
-            require_once "Todo.php";
-            session_start();
+// Initialize the todo list
+$todo_list = new TodoList("localhost","vikas","Vikas123@","Todo_list");
 
-            // Check if TodoList object exists in session
-            if (!isset($_SESSION["todo_list"])) {
-                $_SESSION["todo_list"] = new TodoList();
-            }
+// Check if an action parameter is set, otherwise set it to "list"
+$action = isset($_GET['action']) ? $_GET['action'] : 'list';
 
-            $todo_list = $_SESSION["todo_list"];
+// Handle the actions
+switch ($action) {
+    case 'list':
+        // Get the todo items from the model
+        $todo_items = $todo_list->getItemById($id);
+        
+        // Include the view
+        require 'views/list.php';
+        break;
+    case 'add':
+        // Check if the form has been submitted
+        if (isset($_POST['title'])) {
+            // Add the new todo item to the model
+            $title = $_POST['title'];
+            $todo_list->addItem($title);
+            
+            // Redirect to the list view
+            header('Location: index.php');
+            exit();
+        }
+        
+        // Include the view
+        require 'views/add.php';
+        break;
+    case 'edit':
+        // Check if the form has been submitted
+        if (isset($_POST['id']) && isset($_POST['title'])) {
+            // Update the todo item in the model
+            $id = $_POST['id'];
+            $title = $_POST['title'];
+            $todo_list->editItem($id, $title);
+            
+            // Redirect to the list view
+            header('Location: index.php');
+            exit();
+        }
+        
+        // Get the todo item to be edited from the model
+        $id = $_GET['id'];
+        $todo_item = $todo_list->getItemById($id);
+        
+        // Include the view
+        require 'views/edit.php';
+        break;
+    case 'delete':
+        // Check if the form has been submitted
+        if (isset($_POST['id'])) {
+            // Delete the todo item from the model
+            $id = $_POST['id'];
+            $todo_list->deleteItem($id);
+            
+            // Redirect to the list view
+            header('Location: index.php');
+            exit();
+        }
+        
+        // Get the todo item to be deleted from the model
+        $id = $_GET['id'];
+        $todo_item = $todo_list->getItemById($id);
+        
+        // Include the view
+        require 'views/delete.php';
+        break;
+    default:
+        // Redirect to the list view
+        header('Location: index.php');
+        exit();
+}
 
-            // Handle form submission
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                if (isset($_POST["add"])) {
-                    $title = $_POST["title"];
-                    $todo_list->addItem($title);
-                } else if (isset($_POST["delete"])) {
-                    $id = $_POST["id"];
-                    $todo_list->deleteItem($id);
-                } else if (isset($_POST["mark_done"])) {
-                    $id = $_POST["id"];
-                    $todo_list->markDone($id);
-                } else if (isset($_POST["mark_undone"])) {
-                    $id = $_POST["id"];
-                    $todo_list->markUndone($id);
-                }
-            }
+?>
 
-            ?>
-            <h1>Todo App</h1>
-            <!--  form to fill user details and submission-->
-            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                <label for="title">Add item:</label>
-                <input class="input" type="text" name="title" id="title" required>
-                <button class="btn" type="submit" name="add">Add</button>
-            </form>
 
-            <h2>Todo List:</h2>
-
-            <ol>
-                <?php foreach ($todo_list->getItems() as $item) : ?>
-                    <li <?php if ($item->isDone()) : ?>class="done" <?php endif; ?>>
-                        <?php echo $item->getTitle(); ?>
-                        <!-- form for todo list -->
-                        <form class="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                            <input type="hidden" name="id" value="<?php echo $item->getId(); ?>">
-                            <?php if (!$item->isDone()) : ?>
-                                <button class="btn" type="submit" name="mark_done">Mark Done</button>
-                            <?php else : ?>
-                                <button class="btn" type="submit" name="mark_undone">Mark Undone</button>
-                            <?php endif; ?>
-                            <button class="btn" type="submit" name="delete">Delete</button>
-                        </form>
-                    </li>
-                <?php endforeach; ?>
-            </ol>
-        </div>
-    </div>
-</body>
-
-</html>
